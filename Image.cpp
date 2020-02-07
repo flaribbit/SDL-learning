@@ -3,12 +3,12 @@
 Image::Image(char *filename){
     this->surface=IMG_Load(filename);
     if(!this->surface){
-        Error((char*)"Error loading image file.");
+        Error("Error loading image file.");
         return;
     }
     this->texture=SDL_CreateTextureFromSurface(renderer,this->surface);
     if(!this->texture){
-        Error((char*)"Error creating texture.");
+        Error("Error creating texture.");
         return;
     }
 }

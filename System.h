@@ -4,4 +4,4 @@
 extern SDL_Renderer *renderer;
 extern SDL_Window *window;
 extern unsigned int frames;
-void Error(char *message);
+void Error(const char *message);
