@@ -1,11 +1,14 @@
 CC=g++
-CFLAGS=-s -O2 -DNDEBUG -I include
+CFLAGS=-m32 -s -O2 -DNDEBUG -I include
+DYLIBS=SDL2.dll SDL2_image.dll SDL2_ttf.dll
 
-a.exe: main.o Image.o Sprite.o
-	$(CC) main.o Image.o Sprite.o $(CFLAGS)
+a.exe: main.o Image.o Sprite.o System.o
+	$(CC) main.o Image.o Sprite.o System.o $(DYLIBS) $(CFLAGS)
 main.o: main.cpp
 	$(CC) -c main.cpp $(CFLAGS)
 Image.o: Image.cpp
 	$(CC) -c Image.cpp $(CFLAGS)
 Sprite.o: Sprite.cpp
 	$(CC) -c Sprite.cpp $(CFLAGS)
+System.o: System.cpp
+	$(CC) -c System.cpp $(CFLAGS)
