@@ -1,6 +1,6 @@
 #include "Image.h"
 
-Image::Image(char *filename){
+Image::Image(const char *filename){
     this->surface=IMG_Load(filename);
     if(!this->surface){
         Error("Error loading image file.");
@@ -22,4 +22,16 @@ Image::~Image()
 void Image::Draw(int x,int y){
     SDL_Rect dst={x,y,this->surface->w,this->surface->h};
     SDL_RenderCopy(renderer,this->texture,NULL,&dst);
+}
+
+int Image::GetWidth(){
+    return this->surface->w;
+}
+
+int Image::GetHeight(){
+    return this->surface->h;
+}
+
+SDL_Texture *Image::GetTexture(){
+    return this->texture;
 }

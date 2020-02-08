@@ -8,7 +8,10 @@ private:
     SDL_Surface *surface;
     SDL_Texture *texture;
 public:
-    Image(char *filename);
+    Image(const char *filename);
     ~Image();
     void Draw(int x,int y);
+    int GetWidth();
+    int GetHeight();
+    SDL_Texture *GetTexture();
 };
