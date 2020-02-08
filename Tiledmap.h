@@ -4,9 +4,10 @@ class Tiledmap
 {
 private:
     Image *image;
-    unsigned int tilesize;
-    unsigned int w,h;
-    unsigned int *layer;
+    int tilesize;
+    int w,h;
+    int size;
+    int *layer;
 public:
     Tiledmap();
     Tiledmap(const char *filename);

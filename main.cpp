@@ -1,16 +1,17 @@
 #include <stdio.h>
 #include "Sprite.h"
+#include "Tiledmap.h"
 
 int WinMain(int argc, char *argv[])
 {
     window=SDL_CreateWindow("demo",SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,SCREEN_WIDTH,SCREEN_HEIGHT,SDL_WINDOW_SHOWN);
     renderer=SDL_CreateRenderer(window,-1,SDL_RENDERER_ACCELERATED);
-    Image a("0.png");
+    Tiledmap map;
     for(frames=1;frames;frames++){
         SDL_SetRenderDrawColor(renderer,0,0,0,255);
         SDL_RenderClear(renderer);
         SDL_SetRenderDrawColor(renderer,255,255,255,255);
-        a.Draw(0,0);
+        map.Draw(50-frames,0);
         SDL_Event event;
         while(SDL_PollEvent(&event)){
             switch(event.type){

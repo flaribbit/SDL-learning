@@ -2,9 +2,14 @@
 
 Tiledmap::Tiledmap(){
     this->image=new Image("TileA5.png");
-    this->w=32;
-    this->h=24;
-    this->layer=new unsigned int[this->w*this->h];
+    this->w=16;
+    this->h=16;
+    this->size=this->w*this->h;
+    this->tilesize=32;
+    this->layer=new int[this->size];
+    for(int i=0;i<this->w*this->h;i++){
+        this->layer[i]=i%128;
+    }
 }
 
 Tiledmap::Tiledmap(const char *filename){
@@ -15,7 +20,7 @@ Tiledmap::~Tiledmap(){
     delete this->image;
 }
 
-void GetTile(SDL_Rect &src,int tilesize,int width,int index){
+inline void GetTile(SDL_Rect &src,int tilesize,int width,int index){
     int y=index/width,x=index-y*width;
     src.x=x*tilesize;
     src.y=y*tilesize;
@@ -24,19 +29,23 @@ void GetTile(SDL_Rect &src,int tilesize,int width,int index){
 void Tiledmap::Draw(double cameraX,double cameraY){
     int mapX=(int)cameraX,mapY=(int)cameraY;
     int displayX=SCREEN_WIDTH/this->tilesize+1,displayY=SCREEN_HEIGHT/this->tilesize+1;
-    int indexX=mapX/this->tilesize,indexY=mapY/this->tilesize;
-    int offsetX=indexX*this->tilesize-mapX,offsetY=indexY*this->tilesize-mapY;
+    int startX=mapX/this->tilesize,startY=mapY/this->tilesize;
+    int offsetX=startX*this->tilesize-mapX,offsetY=startY*this->tilesize-mapY;
     SDL_Rect src={0,0,this->tilesize,this->tilesize},dst=src;
-    int tilesetW=this->image->GetWidth();
+    int tilesetW=this->image->GetWidth()/this->tilesize;
     SDL_Texture *texture=this->image->GetTexture();
-    for(int iy=0;iy<displayY;iy++){
-        int index=(iy+indexY)*this->w+indexX;
-        dst.x=offsetX;
-        dst.y=offsetY+this->tilesize*iy;
-        for(int ix=0;ix<displayX;ix++,dst.x++){
-            unsigned int tileID=this->layer[index];
-            GetTile(src,this->tilesize,tilesetW,tileID);
-            SDL_RenderCopy(renderer,texture,&src,&dst);
+    dst.y=offsetY;
+    for(int iy=startY;iy<startY+displayY;iy++,dst.y+=this->tilesize){
+        if(iy>=0&&iy<this->h){
+            int index=iy*this->w+startX;
+            dst.x=offsetX;
+            for(int ix=startX;ix<startX+displayX;ix++,dst.x+=this->tilesize,index++){
+                if(ix>=0&&ix<this->w){
+                    unsigned int tileID=this->layer[index];
+                    GetTile(src,this->tilesize,tilesetW,tileID);
+                    SDL_RenderCopy(renderer,texture,&src,&dst);
+                }
+            }
         }
     }
 }
