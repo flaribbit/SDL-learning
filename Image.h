@@ -9,6 +9,7 @@ private:
     SDL_Texture *texture;
 public:
     Image(const char *filename);
+    Image(SDL_Surface *surface);
     ~Image();
     void Draw(int x,int y);
     int GetWidth();

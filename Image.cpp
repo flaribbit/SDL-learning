@@ -13,6 +13,15 @@ Image::Image(const char *filename){
     }
 }
 
+Image::Image(SDL_Surface *surface){
+    this->surface=surface;
+    this->texture=SDL_CreateTextureFromSurface(renderer,this->surface);
+    if(!this->texture){
+        Error("Error creating texture.");
+        return;
+    }
+}
+
 Image::~Image()
 {
     SDL_DestroyTexture(this->texture);
