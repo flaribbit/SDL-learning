@@ -25,7 +25,7 @@ Image::Image(SDL_Surface *surface){
 Image::~Image()
 {
     SDL_DestroyTexture(this->texture);
-    SDL_free(this->surface);
+    SDL_FreeSurface(this->surface);
 }
 
 void Image::Draw(int x,int y){
