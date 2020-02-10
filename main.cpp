@@ -3,6 +3,7 @@
 #include "Sprite.h"
 #include "Control.h"
 #include "Tiledmap.h"
+#include "Font.h"
 
 int WinMain(int argc, char *argv[])
 {
@@ -11,15 +12,18 @@ int WinMain(int argc, char *argv[])
     Tiledmap map;
     int x=-100,y=-100;
     TTF_Init();
-    TTF_Font *font=TTF_OpenFont("loli2.ttf",18);
-    SDL_Color color={255,255,255,255};
-    Image text=Image(TTF_RenderUTF8_Blended(font,"测试",color));
+    Font f;
+    f.NewFont("loli2.ttf",18);
     for(frames=1;frames;frames++){
+        char buf[100];
         SDL_SetRenderDrawColor(renderer,0,0,0,255);
         SDL_RenderClear(renderer);
         SDL_SetRenderDrawColor(renderer,255,255,255,255);
         map.Draw(x,y);
-        text.Draw(0,0);
+        f.Print("设想一下：灯光微暗情人四目相对，他轻搂着她纤细柔软的腰肢，头微微右倾靠近她的脸，情不自禁地闭上眼睛",0,0);
+        for(int i=0;i<100;i++){
+            f.Print(itoa(frames,buf,10),0,20*i);
+        }
         controller.Update();
         if(controller.IsDown(Control::KeyLeft)){
             x--;
@@ -30,6 +34,9 @@ int WinMain(int argc, char *argv[])
             y--;
         }else if(controller.IsDown(Control::KeyDown)){
             y++;
+        }
+        if(frames%60==0){
+            printf("size=%d\n",f.GetCacheLength());
         }
         SDL_RenderPresent(renderer);
         SDL_Delay(1000/60);

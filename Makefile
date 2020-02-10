@@ -1,9 +1,9 @@
 CC=g++
-CFLAGS=-m32 -s -O2 -DNDEBUG -I include
+CFLAGS=-m32 -s -O2 -DNDEBUG -I include -std=c++11
 DYLIBS=SDL2.dll SDL2_image.dll SDL2_ttf.dll
 
-a.exe: resource.o main.o Image.o Sprite.o System.o Tiledmap.o Control.o
-	$(CC) resource.o main.o Image.o Sprite.o System.o Tiledmap.o Control.o $(DYLIBS) $(CFLAGS)
+a.exe: resource.o main.o Image.o Sprite.o System.o Tiledmap.o Control.o Font.o
+	$(CC) resource.o main.o Image.o Sprite.o System.o Tiledmap.o Control.o Font.o $(DYLIBS) $(CFLAGS)
 resource.o: resource.rc
 	windres -F pe-i386 resource.rc resource.o
 main.o: main.cpp
@@ -18,3 +18,5 @@ Tiledmap.o: Tiledmap.cpp
 	$(CC) -c Tiledmap.cpp $(CFLAGS)
 Control.o: Control.cpp
 	$(CC) -c Control.cpp $(CFLAGS)
+Font.o: Font.cpp
+	$(CC) -c Font.cpp $(CFLAGS)
