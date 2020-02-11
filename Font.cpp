@@ -14,6 +14,10 @@ void Font::CreateCache(const char *string){
     unsigned char *p=(unsigned char *)string;
     SDL_Color color={255,255,255,255};
     while(*p){
+        if(*p>=128&&*p<192){
+            p++;
+            continue;
+        }
         uint32_t code;
         char c[5]={0};
         if(*p>=240){
@@ -61,6 +65,10 @@ void Font::Print(const char *string,int x,int y){
     CreateCache(string);
     unsigned char *p=(unsigned char *)string;
     while(*p){
+        if(*p>=128&&*p<192){
+            p++;
+            continue;
+        }
         uint32_t code;
         if(*p>=240){
             code=*(uint32_t*)p;
@@ -84,6 +92,10 @@ void Font::Print(const char *string,int x,int y){
 void Font::Release(const char *c){
     unsigned char *p=(unsigned char *)c;
     while(*p){
+        if(*p>=128&&*p<192){
+            p++;
+            continue;
+        }
         uint32_t code;
         if(*p>=240){
             code=*(uint32_t*)p;
