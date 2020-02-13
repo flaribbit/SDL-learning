@@ -11,73 +11,32 @@ Font::~Font()
 }
 
 //Converter from: https://github.com/RoelofBerg/Utf8Ucs2Converter/blob/master/Utf8Ucs2Converter.cpp
-bool utf8CharToUcs2Char(const char* utf8Tok, wchar_t* ucs2Char, uint32_t* utf8TokLen)
+unsigned char ConvertChar(const char* utf8char, wchar_t* ucs2char)
 {
-    //We do math, that relies on unsigned data types
-    const unsigned char* utf8TokUs = reinterpret_cast<const unsigned char*>(utf8Tok);
-
-    //Initialize return values for 'return false' cases.
-    *ucs2Char = L'?';
-    *utf8TokLen = 1;
-
-    //Decode
-    if (0x80 > utf8TokUs[0])
-    {
-        //Tokensize: 1 byte
-        *ucs2Char = static_cast<const wchar_t>(utf8TokUs[0]);
-    }
-    else if (0xC0 == (utf8TokUs[0] & 0xE0))
-    {
-        //Tokensize: 2 bytes
-        if ( 0x80 != (utf8TokUs[1] & 0xC0) )
+    const unsigned char *p=(const unsigned char*)utf8char;
+    *ucs2char = L'?';
+    if(0x80>p[0]){
+        *ucs2char=(wchar_t)p[0];//1字节字符
+        return 1;
+    }else if(0xC0==(p[0]&0xE0)){
+        if(0x80!=(p[1]&0xC0))
         {
-            return false;
+            return 0;
         }
-        *utf8TokLen = 2;
-        *ucs2Char = static_cast<const wchar_t>(
-                  (utf8TokUs[0] & 0x1F) << 6
-                | (utf8TokUs[1] & 0x3F)
-            );
-    }
-    else if (0xE0 == (utf8TokUs[0] & 0xF0))
-    {
-        //Tokensize: 3 bytes
-        if (   ( 0x80 != (utf8TokUs[1] & 0xC0) )
-		    || ( 0x80 != (utf8TokUs[2] & 0xC0) )
-		   )
+        *ucs2char=(wchar_t)((p[0]&0x1F)<<6 | (p[1]&0x3F));//2字节字符
+        return 2;
+    }else if(0xE0==(p[0]&0xF0)){
+        if((0x80!=(p[1]&0xC0))|| (0x80!=(p[2]&0xC0)))
         {
-            return false;
+            return 0;
         }
-        *utf8TokLen = 3;
-        *ucs2Char = static_cast<const wchar_t>(
-                  (utf8TokUs[0] & 0x0F) << 12
-                | (utf8TokUs[1] & 0x3F) << 6
-                | (utf8TokUs[2] & 0x3F)
-            );
+        *ucs2char=(wchar_t)((p[0]&0x0F)<<12 | (p[1]&0x3F)<<6 | (p[2]&0x3F));//3字节字符
+        return 3;
+    }else if(0xF0==(p[0]&0xF8)){
+        return 0;//4字节容量不够
+    }else{
+        return 0;//错误字符
     }
-    else if (0xF0 == (utf8TokUs[0] & 0xF8))
-    {
-        //Tokensize: 4 bytes
-        *utf8TokLen = 4;
-        return false;                        //Character exceeds the UCS-2 range (UCS-4 would be necessary)
-    }
-    else if ((0xF8 == utf8TokUs[0] & 0xFC))
-    {
-        //Tokensize: 5 bytes
-        *utf8TokLen = 5;
-        return false;                        //Character exceeds the UCS-2 range (UCS-4 would be necessary)
-    }
-    else if (0xFC == (utf8TokUs[0] & 0xFE))
-    {
-        //Tokensize: 6 bytes
-        *utf8TokLen = 6;
-        return false;                        //Character exceeds the UCS-2 range (UCS-4 would be necessary)
-    }
-    else
-    {
-        return false;
-    }
-    return true;
 }
 
 uint32_t GetUTF8Char(unsigned char *&p,char *c){
