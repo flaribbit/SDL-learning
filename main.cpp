@@ -19,11 +19,9 @@ int WinMain(int argc, char *argv[])
         SDL_SetRenderDrawColor(renderer,0,0,0,255);
         SDL_RenderClear(renderer);
         SDL_SetRenderDrawColor(renderer,255,255,255,255);
-        map.Draw(x,y);
-        f.Print("设想一下：灯光微暗情人四目相对，他轻搂着她纤细柔软的腰肢，头微微右倾靠近她的脸，情不自禁地闭上眼睛",0,0);
-        for(int i=0;i<100;i++){
-            f.Print(itoa(frames,buf,10),0,20*i);
-        }
+        map.AutoTileTest();
+        // map.Draw(x,y);
+        // f.Print("设想一下：灯光微暗情人四目相对，他轻搂着她纤细柔软的腰肢，头微微右倾靠近她的脸，情不自禁地闭上眼睛",0,0);
         controller.Update();
         if(controller.IsDown(Control::KeyLeft)){
             x--;
