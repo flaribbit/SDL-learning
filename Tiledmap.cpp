@@ -54,9 +54,18 @@ unsigned char AutoTileTab[48][4]={
     8,9,20,21,//43
     16,19,20,23,//44
     10,11,22,23,//45
-    0,1,4,5,//46
-    8,11,20,23,//47
+    8,11,20,23,//46
+    0,1,4,5,//47
 };
+
+char ToTileTabIndex(unsigned char *blocks){
+    for(int i=0;i<48;i++){
+        if(!memcmp(AutoTileTab[i],blocks,4)){
+            return i;
+        }
+    }
+    return 47;
+}
 
 Tiledmap::Tiledmap(){
     this->image=new Image("TileA5.png");
@@ -83,6 +92,14 @@ inline void GetTile(SDL_Rect &src,int tilesize,int width,int index){
     int y=index/width,x=index-y*width;
     src.x=x*tilesize;
     src.y=y*tilesize;
+}
+
+int Tiledmap::GetTileId(int i,int j){
+    if(i>=0&&i<this->h&&j>=0&&j<this->w){
+        return this->layer[i*this->w+j];
+    }else{
+        return -1;
+    }
 }
 
 void Tiledmap::Draw(double cameraX,double cameraY){
@@ -118,6 +135,103 @@ SDL_Rect *Tiledmap::GetSmallTileRect(int index, int frame){
     rect.x=64*frame+index%4*16;
     rect.y=index/4*16;
     return &rect;
+}
+
+void Tiledmap::RefreshAutoTile(int i,int j){
+    // 0 1 2
+    // 3   4
+    // 5 6 7
+    unsigned char blocks[4];
+    int around[8];
+    int self=(GetTileId(i,j)-INDEX_AUTOTILE)>>6;
+    around[0]=GetTileId(i-1,j-1);
+    around[1]=GetTileId(i-1,j);
+    around[2]=GetTileId(i-1,j+1);
+    around[3]=GetTileId(i,j-1);
+    around[4]=GetTileId(i,j+1);
+    around[5]=GetTileId(i+1,j-1);
+    around[6]=GetTileId(i+1,j);
+    around[7]=GetTileId(i+1,j+1);
+    for(int i=0;i<7;i++){
+        if(around[i]>=INDEX_AUTOTILE){
+            around[i]=(around[i]-INDEX_AUTOTILE)>>6;
+        }else{
+            around[i]=-1;
+        }
+    }
+    //左上
+    if(self==around[1]){
+        if(self==around[3]){
+            if(self==around[0]){
+                blocks[0]=18;
+            }else{
+                blocks[0]=2;
+            }
+        }else{
+            blocks[0]=16;
+        }
+    }else{
+        if(self==around[3]){
+            blocks[0]=10;
+        }else{
+            blocks[0]=8;
+        }
+    }
+    //右上
+    if(self==around[1]){
+        if(self==around[4]){
+            if(self==around[2]){
+                blocks[1]=17;
+            }else{
+                blocks[1]=3;
+            }
+        }else{
+            blocks[1]=9;
+        }
+    }else{
+        if(self==around[4]){
+            blocks[1]=19;
+        }else{
+            blocks[1]=11;
+        }
+    }
+    //左下
+    if(self==around[6]){
+        if(self==around[3]){
+            if(self==around[5]){
+                blocks[2]=14;
+            }else{
+                blocks[2]=6;
+            }
+        }else{
+            blocks[2]=12;
+        }
+    }else{
+        if(self==around[3]){
+            blocks[2]=22;
+        }else{
+            blocks[2]=20;
+        }
+    }
+    //右下
+    if(self==around[6]){
+        if(self==around[4]){
+            if(self==around[7]){
+                blocks[3]=13;
+            }else{
+                blocks[3]=7;
+            }
+        }else{
+            blocks[3]=15;
+        }
+    }else{
+        if(self==around[4]){
+            blocks[3]=21;
+        }else{
+            blocks[3]=23;
+        }
+    }
+    this->layer[i*this->w+j]=ToTileTabIndex(blocks);
 }
 
 void Tiledmap::AutoTileTest(){
