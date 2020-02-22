@@ -16,7 +16,7 @@ Control::~Control()
 
 void Control::Update(){
     SDL_Event event;
-    for(int i=0;i<8;i++){
+    for(int i=0;i<10;i++){
         this->okey[i]=this->key[i];
     }
     while(SDL_PollEvent(&event)){
@@ -46,6 +46,22 @@ void Control::Update(){
                 case SDLK_k:this->key[KeyB]=false;break;
                 case SDLK_u:this->key[KeyX]=false;break;
                 case SDLK_i:this->key[KeyY]=false;break;
+            }
+            break;
+        case SDL_MOUSEMOTION:
+            mouseX=event.motion.x;
+            mouseY=event.motion.y;
+            break;
+        case SDL_MOUSEBUTTONDOWN:
+            switch(event.button.button){
+                case SDL_BUTTON_LEFT:this->key[KeyMouseL]=true;break;
+                case SDL_BUTTON_RIGHT:this->key[KeyMouseR]=true;break;
+            }
+            break;
+        case SDL_MOUSEBUTTONUP:
+            switch(event.button.button){
+                case SDL_BUTTON_LEFT:this->key[KeyMouseL]=false;break;
+                case SDL_BUTTON_RIGHT:this->key[KeyMouseR]=false;break;
             }
             break;
         }

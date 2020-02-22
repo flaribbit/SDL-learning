@@ -4,9 +4,11 @@
 class Control
 {
 private:
-    bool key[8];
-    bool okey[8];
+    bool key[10];
+    bool okey[10];
 public:
+    int mouseX;
+    int mouseY;
     typedef enum{
         KeyUp,
         KeyDown,
@@ -16,6 +18,8 @@ public:
         KeyB,
         KeyX,
         KeyY,
+        KeyMouseL,
+        KeyMouseR,
     }Key;
     Control();
     ~Control();

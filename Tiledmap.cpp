@@ -64,6 +64,7 @@ char ToTileTabIndex(unsigned char *blocks){
             return i;
         }
     }
+    printf("warning: not found {%d, %d, %d, %d}\n",blocks[0],blocks[1],blocks[2],blocks[3]);
     return 47;
 }
 
@@ -102,6 +103,10 @@ int Tiledmap::GetTileId(int i,int j){
     }
 }
 
+void Tiledmap::SetTileId(int i,int j,int id){
+    this->layer[i*this->w+j]=id;
+}
+
 void Tiledmap::Draw(double cameraX,double cameraY){
     int mapX=(int)cameraX,mapY=(int)cameraY;
     int displayX=SCREEN_WIDTH/this->tilesize+1,displayY=SCREEN_HEIGHT/this->tilesize+1;
@@ -118,8 +123,12 @@ void Tiledmap::Draw(double cameraX,double cameraY){
             for(int ix=startX;ix<startX+displayX;ix++,dst.x+=this->tilesize,index++){
                 if(ix>=0&&ix<this->w){
                     unsigned int tileID=this->layer[index];
-                    GetTile(src,this->tilesize,tilesetW,tileID);
-                    SDL_RenderCopy(renderer,texture,&src,&dst);
+                    if(tileID<INDEX_AUTOTILE){
+                        GetTile(src,this->tilesize,tilesetW,tileID);
+                        SDL_RenderCopy(renderer,texture,&src,&dst);
+                    }else{
+                        DrawAutoTile(dst.x,dst.y,tileID);
+                    }
                 }
             }
         }
@@ -152,7 +161,7 @@ void Tiledmap::RefreshAutoTile(int i,int j){
     around[5]=GetTileId(i+1,j-1);
     around[6]=GetTileId(i+1,j);
     around[7]=GetTileId(i+1,j+1);
-    for(int i=0;i<7;i++){
+    for(int i=0;i<8;i++){
         if(around[i]>=INDEX_AUTOTILE){
             around[i]=(around[i]-INDEX_AUTOTILE)>>6;
         }else{
@@ -186,11 +195,11 @@ void Tiledmap::RefreshAutoTile(int i,int j){
                 blocks[1]=3;
             }
         }else{
-            blocks[1]=9;
+            blocks[1]=19;
         }
     }else{
         if(self==around[4]){
-            blocks[1]=19;
+            blocks[1]=9;
         }else{
             blocks[1]=11;
         }
@@ -231,7 +240,25 @@ void Tiledmap::RefreshAutoTile(int i,int j){
             blocks[3]=23;
         }
     }
-    this->layer[i*this->w+j]=ToTileTabIndex(blocks);
+    SetTileId(i,j,INDEX_AUTOTILE+(self<<6)+ToTileTabIndex(blocks));
+}
+
+void Tiledmap::DrawAutoTile(int x,int y,int index){
+    unsigned char *blocks=AutoTileTab[index&0x3f];
+    SDL_Texture *texture=this->autotile->GetTexture();
+    SDL_Rect *src=GetSmallTileRect(blocks[0],0);
+    SDL_Rect dst={x,y,16,16};
+    SDL_RenderCopy(renderer,texture,src,&dst);
+    dst.x+=16;
+    src=GetSmallTileRect(blocks[1],0);
+    SDL_RenderCopy(renderer,texture,src,&dst);
+    dst.y+=16;
+    dst.x-=16;
+    src=GetSmallTileRect(blocks[2],0);
+    SDL_RenderCopy(renderer,texture,src,&dst);
+    dst.x+=16;
+    src=GetSmallTileRect(blocks[3],0);
+    SDL_RenderCopy(renderer,texture,src,&dst);
 }
 
 void Tiledmap::AutoTileTest(){
