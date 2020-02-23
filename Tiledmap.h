@@ -4,7 +4,6 @@
 class Tiledmap
 {
 private:
-    Image *image;
     Image *animatetile;
     Image *autotile;
     int tilesize;
@@ -15,6 +14,7 @@ private:
     SDL_Rect *GetSmallTileRect(int index, int frame);
     void DrawAutoTile(int x,int y,int index);
 public:
+    Image *image;
     void RefreshAutoTile(int i,int j);
     Tiledmap();
     Tiledmap(const char *filename);

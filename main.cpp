@@ -14,8 +14,17 @@ int WinMain(int argc, char *argv[])
     TTF_Init();
     Font f;
     f.NewFont("loli2.ttf",18);
+
+    int param[4]={0,0,0,0};
+    int select=0;
+    char buf[100];
+    const char *strings[4][2]={
+        "红=%d",">>红<<=%d",
+        "绿=%d",">>绿<<=%d",
+        "蓝=%d",">>蓝<<=%d",
+        "灰=%d",">>灰<<=%d",
+    };
     for(frames=1;frames;frames++){
-        char buf[100];
         SDL_SetRenderDrawColor(renderer,0,0,0,255);
         SDL_RenderClear(renderer);
         SDL_SetRenderDrawColor(renderer,255,255,255,255);
@@ -47,16 +56,37 @@ int WinMain(int argc, char *argv[])
             // f.Print((sprintf(buf,"mouse=%d,%d(超出地图范围)",bx,by),buf),0,0);
         }
 
+        f.Print("色调设置(WS选择，AD调节，J重置)",0,0);
+        for(int i=0;i<4;i++){
+            f.Print((sprintf(buf,strings[i][select==i],param[i]),buf),0,(i+1)*20);
+        }
+
         controller.Update();
         if(controller.IsDown(Control::KeyLeft)){
-            x--;
+            if(select<3){
+                param[select]=LIMIT(param[select]-1,-255,255);
+            }else{
+                param[select]=LIMIT(param[select]-1,0,255);
+            }
+            map.image->SetTone(param[0],param[1],param[2],param[3]);
         }else if(controller.IsDown(Control::KeyRight)){
-            x++;
+            if(select<3){
+                param[select]=LIMIT(param[select]+1,-255,255);
+            }else{
+                param[select]=LIMIT(param[select]+1,0,255);
+            }
+            map.image->SetTone(param[0],param[1],param[2],param[3]);
         }
-        if(controller.IsDown(Control::KeyUp)){
-            y--;
-        }else if(controller.IsDown(Control::KeyDown)){
-            y++;
+        if(controller.IsPress(Control::KeyUp)){
+            select=LIMIT(select-1,0,3);
+        }else if(controller.IsPress(Control::KeyDown)){
+            select=LIMIT(select+1,0,3);
+        }
+        if(controller.IsPress(Control::KeyA)){
+            for(int i=0;i<4;i++){
+                param[i]=0;
+            }
+            map.image->SetTone(param[0],param[1],param[2],param[3]);
         }
         if(frames%60==0){
             printf("size=%d\n",f.GetCacheLength());
